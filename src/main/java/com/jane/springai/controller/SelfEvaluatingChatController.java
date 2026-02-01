@@ -1,0 +1,66 @@
+package com.jane.springai.controller;
+
+import com.jane.springai.exception.InvalidAnswerException;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.evaluation.FactCheckingEvaluator;
+import org.springframework.ai.evaluation.EvaluationRequest;
+import org.springframework.ai.evaluation.EvaluationResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api")
+public class SelfEvaluatingChatController {
+
+    private final ChatClient chatClient;
+    private final FactCheckingEvaluator evaluator;
+
+    @Value("classpath:/promptTemplates/hrPolicy.st")
+    Resource hrPolicyTemplate;
+
+    public SelfEvaluatingChatController(
+            @Qualifier("mainChatClient") ChatClient chatClient,
+            FactCheckingEvaluator evaluator
+
+    ) {
+        this.chatClient = chatClient;
+        this.evaluator = evaluator;
+    }
+
+
+    @Retryable(retryFor =  InvalidAnswerException.class,maxAttempts = 3)
+    @GetMapping("/evaluate/chat")
+    public String chat(@RequestParam("message") String message) {
+
+        String answer = chatClient.prompt()
+                .user(message)
+                .call()
+                .content();
+
+        EvaluationResponse response = evaluator.evaluate(
+                new EvaluationRequest(message, List.of(), answer)
+        );
+
+        if (!response.isPass()) {
+            throw new RuntimeException("Evaluation failed");
+        }
+
+        return answer;
+    }
+
+    @Recover
+    public String recover(InvalidAnswerException exception) {
+        return "I'm sorry, I couldn't answer your question. Please try rephrasing it.";
+    }
+
+}
