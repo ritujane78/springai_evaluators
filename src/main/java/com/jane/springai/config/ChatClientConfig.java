@@ -37,7 +37,8 @@ public class ChatClientConfig {
                         .maxTokens(100)
                         .build());
 
-        return new FactCheckingEvaluator(evaluatorBuilder);
+        return  FactCheckingEvaluator.builder(evaluatorBuilder)
+                .build();
     }
     @Bean
     public RelevancyEvaluator relevancyEvaluator(ChatClient.Builder builder) {

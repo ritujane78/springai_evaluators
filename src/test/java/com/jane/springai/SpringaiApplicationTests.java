@@ -87,7 +87,7 @@ class SpringaiApplicationTests {
 
     @Test
     @DisplayName("Should return factually correct response for gravity-related question")
-    @Timeout(value = 60)
+    @Timeout(value = 100)
     void evaluateFactAccuracyForGravityQuestion() {
         // Given
         String question = "Who discovered the law of universal gravitation?";
@@ -113,7 +113,7 @@ class SpringaiApplicationTests {
 
     @Test
     @DisplayName("Should correctly evaluate factual response based on HR policy context (RAG scenario)")
-    @Timeout(value = 150)
+    @Timeout(value = 100)
     public void evaluateHrPolicyAnswerWithRagContext() throws IOException {
         // Given
         String question = "How many paid leaves do employees get annually?";

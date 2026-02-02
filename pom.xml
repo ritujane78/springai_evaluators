@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jane</groupId>
-	<artifactId>springai</artifactId>
+	<artifactId>springai-evaluators</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springai</name>
+	<name>springai-evaluators</name>
 	<description>Demo project of Evaluation Testing in Spring AI</description>
 	<url/>
 	<licenses>
@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<spring-ai.version>1.0.0</spring-ai.version>
+		<spring-ai.version>1.1.2</spring-ai.version>
 	</properties>
 	<dependencies>
 		<dependency>
